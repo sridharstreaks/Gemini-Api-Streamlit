@@ -5,7 +5,7 @@ import google.generativeai as genai
 #load_dotenv()  # Loading all the environment variables from .env file
 
 #api_key = os.getenv("GOOGLE_API_KEY")  # Accessing the environment variables
-api_key=st.secrects["GEMINI_API_KEY"]
+api_key=st.secrets["GEMINI_API_KEY"]
 
 genai.configure(api_key=api_key)  # Loading the API key into the generativeai module
 
