@@ -15,6 +15,9 @@ api_key=st.secrets["GEMINI_API_KEY"]
 
 genai.configure(api_key=api_key)  # Loading the API key into the generativeai module
 
+# Initialize the model
+model = genai.GenerativeModel("gemini-1.5-flash")
+
 # Function to translate roles between Gemini-Pro and Streamlit terminology
 def translate_role_for_streamlit(user_role):
     if user_role == "model":
