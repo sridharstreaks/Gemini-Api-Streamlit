@@ -108,15 +108,6 @@ def all_in_one(new_prompt:str)-> str:
 
             products.append(product)
         count += 1
-            #results=products[0]["Title"]
-        """i=0    
-        while i<5:
-            #print(product_info[i]["Title"])
-            if not None:
-                results.append(products[i]["Title"])
-            else:
-                continue
-            i+=1"""
     return products
     
 tool=[all_in_one]
