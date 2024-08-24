@@ -1,6 +1,9 @@
 #from dotenv import load_dotenv
 import streamlit as st
 import google.generativeai as genai
+import requests
+from bs4 import BeautifulSoup
+import re
 
 #load_dotenv()  # Loading all the environment variables from .env file
 # Configure Streamlit page settings
