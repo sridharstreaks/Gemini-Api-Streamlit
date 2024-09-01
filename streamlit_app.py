@@ -113,8 +113,8 @@ def all_in_one(new_prompt:str)-> str:
 tool=[all_in_one]
 
 st.set_page_config(
-    page_title="Chat with Gemini-Pro!",
-    page_icon=":brain:",  # Favicon emoji
+    page_title="Rufus Mini - Your New Shopping Assistant",
+    page_icon=":sparkles:",  # Favicon emoji
     layout="centered",  # Page layout option
 )
 
@@ -140,7 +140,7 @@ if "chat_session" not in st.session_state:
 
 
 # Display the chatbot's title on the page
-st.title("🤖 Gemini Flash - ChatBot")
+st.title("✨ Rufus Mini - Your New Shopping Assistant", help = "This Shopping assistant is designed by Sridhar powered by Google Gemini"))
 
 # Display the chat history
 for message in st.session_state.chat_session.history:
@@ -148,7 +148,7 @@ for message in st.session_state.chat_session.history:
         st.markdown(message.parts[0].text)
 
 # Input field for user's message
-user_prompt = st.chat_input("Ask Gemini-Pro...")
+user_prompt = st.chat_input("Ask Anything...")
 if user_prompt:
     # Add user's message to chat and display it
     st.chat_message("user").markdown(user_prompt)
