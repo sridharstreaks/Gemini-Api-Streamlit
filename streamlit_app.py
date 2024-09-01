@@ -140,7 +140,7 @@ if "chat_session" not in st.session_state:
 
 
 # Display the chatbot's title on the page
-st.title("✨ Rufus Mini - Your New Shopping Assistant", help = "This Shopping assistant is designed by Sridhar powered by Google Gemini"))
+st.title("✨ Rufus Mini - Your New Shopping Assistant", help = "This Shopping assistant is designed by Sridhar powered by Google Gemini")
 
 # Display the chat history
 for message in st.session_state.chat_session.history:
