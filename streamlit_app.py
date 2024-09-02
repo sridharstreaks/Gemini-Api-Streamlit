@@ -124,7 +124,7 @@ api_key=st.secrets["GEMINI_API_KEY"]
 genai.configure(api_key=api_key)  # Loading the API key into the generativeai module
 
 # Initialize the model
-model = genai.GenerativeModel("gemini-1.5-flash",tools=tool,system_instruction="You are a helpful shopping assistant. You would receive user queries for which you need to use the provided function which gives list of dictionaries containing ASIN which is the unique product ID, Title, Stars, Reviews, Current_Price, MRP, Deal, Image, Link. You need to these info as a natural response. You might also recieve some follow up questions based on the result or some general query out of shoping context so you don't need to use the function for every query. Based on your judgement use the function whenever needed.")
+model = genai.GenerativeModel("gemini-1.5-flash",tools=tool,system_instruction="You are a helpful shopping assistant. You would receive user queries for which you need to use the provided function which gives list of dictionaries containing ASIN which is the unique product ID (don't show ASIN to the user), Title, Stars, Reviews, Current_Price, MRP, Deal, Image, Link. You need to these info as a natural response. You might also recieve some follow up questions based on the result or some general query out of shoping context so you don't need to use the function for every query. Based on your judgement use the function whenever needed.")
 
 # Function to translate roles between Gemini-Pro and Streamlit terminology
 def translate_role_for_streamlit(user_role):
@@ -140,7 +140,7 @@ if "chat_session" not in st.session_state:
 
 
 # Display the chatbot's title on the page
-st.title("✨ Rufus Mini - Your New Shopping Assistant", help = "This Shopping assistant is designed by Sridhar powered by Google Gemini")
+st.title("✨ Streaks Shop Ai - Your New Shopping Assistant", help = "This Shopping assistant is designed by Sridhar powered by Google Gemini")
 
 # Display the chat history
 for message in st.session_state.chat_session.history:
