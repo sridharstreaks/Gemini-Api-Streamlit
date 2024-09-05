@@ -17,7 +17,7 @@ def internet(query:str):
         response (list): list of dictionaries containing title,link to the search results page (herf),body 
     """
     req=DDGS()
-    response=req.text(query,max_results=10)
+    response=req.text(query,max_results=5)
     return response
 
 def all_in_one(new_prompt:str)-> str:
@@ -56,7 +56,7 @@ def all_in_one(new_prompt:str)-> str:
     count = 0
 
     for item in items:
-        if count >= 3:
+        if count >= 5:
             break
         
         # Skip sponsored products
