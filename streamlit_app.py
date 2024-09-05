@@ -4,9 +4,21 @@ import google.generativeai as genai
 import requests
 from bs4 import BeautifulSoup
 import re
+from duckduckgo_search import DDGS
 
 #load_dotenv()  # Loading all the environment variables from .env file
 # Configure Streamlit page settings
+
+def internet(query:str):
+    """Fetches search results for real-time information from internet based on keywords as input
+    Args:
+        query: user prompt broken down as keywords rather than the entire query
+    return:
+        response (list): list of dictionaries containing title,link to the search results page (herf),body 
+    """
+    req=DDGS()
+    response=req.text(query,max_results=10)
+    return response
 
 def all_in_one(new_prompt:str)-> str:
     """Fecthes a product title from an ecommerce store based on user query.
@@ -110,10 +122,10 @@ def all_in_one(new_prompt:str)-> str:
         count += 1
     return products
     
-tool=[all_in_one]
+tool=[all_in_one,internet]
 
 st.set_page_config(
-    page_title="Rufus Mini - Your New Shopping Assistant",
+    page_title="Streaks Ai - Your New Shopping Assistant",
     page_icon=":sparkles:",  # Favicon emoji
     layout="centered",  # Page layout option
 )
@@ -124,7 +136,7 @@ api_key=st.secrets["GEMINI_API_KEY"]
 genai.configure(api_key=api_key)  # Loading the API key into the generativeai module
 
 # Initialize the model
-model = genai.GenerativeModel("gemini-1.5-flash",tools=tool,system_instruction="You are a helpful shopping assistant. You would receive user queries for which you need to use the provided function which gives list of dictionaries containing ASIN which is the unique product ID (don't show ASIN to the user), Title, Stars, Reviews, Current_Price, MRP, Deal, Image, Link. You need to these info as a natural response. You might also recieve some follow up questions based on the result or some general query out of shoping context so you don't need to use the function for every query. Based on your judgement use the function whenever needed.")
+model = genai.GenerativeModel("gemini-1.5-flash",tools=tool,system_instruction="You are a helpful shopping assistant named Streaks. You would receive user queries for which you need to use the provided function which gives a list of dictionaries containing ASIN which is the unique product ID (don't show ASIN to the user), Title, Stars, Reviews, Current_Price, MRP, Deal, Image, Link. You need to use this info to provide a natural response. You might also receive some follow up questions based on the result or some general query out of the shopping context which may require internet search results for which you have another function called \'internet\'.So, you don't need to use the function for every query. Based on your judgment use the functions whenever needed.")
 
 # Function to translate roles between Gemini-Pro and Streamlit terminology
 def translate_role_for_streamlit(user_role):
@@ -140,7 +152,7 @@ if "chat_session" not in st.session_state:
 
 
 # Display the chatbot's title on the page
-st.title("✨ Streaks Shop Ai - Your New Shopping Assistant", help = "This Shopping assistant is designed by Sridhar powered by Google Gemini")
+st.title("✨ Streaks Ai - Your New Shopping Assistant", help = "This Shopping assistant is designed by Sridhar Streaks powered by Google Gemini")
 
 # Display the chat history
 for message in st.session_state.chat_session.history:
