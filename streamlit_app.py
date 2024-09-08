@@ -20,12 +20,24 @@ def internet(query:str):
     response=req.text(query,max_results=5)
     return response
 
+def amazon_issues(query:str):
+    """Fetches search results for help related to Amazon e-commerce store
+    Args:
+        query: user prompt broken down as keywords rather than the entire query
+    return:
+        response (list): list of dictionaries containing title, link to the search results page (herf), body 
+    """
+    keyword=query+" site:amazon.in"
+    req=DDGS()
+    response=req.text(keyword,max_results=5,region='en-in')
+    return response
+
 def all_in_one(new_prompt:str)-> str:
-    """Fecthes a product title from an ecommerce store based on user query.
+    """Fecthes a product title from an e-commerce store based on the user query.
     Args:
         new_prompt: user prompt
     return:
-        results (list): list of dictionaries containing ASIN, Title, Stars, Reviews, Current_Price, MRP, Deal, Image link, Link to product page or a string if no products is found
+        results (list): list of dictionaries containing ASIN, Title, Stars, Reviews, Current_Price, MRP, Deal, Image link, Link to the product page, or a string if no products are found
     """
     #Makes the query into search keywords
     query=new_prompt.replace(" ", "+")
@@ -122,7 +134,7 @@ def all_in_one(new_prompt:str)-> str:
         count += 1
     return products
     
-tool=[all_in_one,internet]
+tool=[all_in_one,internet,amazon_issues]
 
 st.set_page_config(
     page_title="Streaks Ai - Your New Shopping Assistant",
@@ -136,7 +148,8 @@ api_key=st.secrets["GEMINI_API_KEY"]
 genai.configure(api_key=api_key)  # Loading the API key into the generativeai module
 
 # Initialize the model
-model = genai.GenerativeModel("gemini-1.5-flash",tools=tool,system_instruction="You are a helpful shopping assistant named Streaks. You would receive user queries for which you need to use the provided function which gives a list of dictionaries containing ASIN which is the unique product ID (don't show ASIN to the user), Title, Stars, Reviews, Current_Price, MRP, Deal, Image, Link. You need to use this info to provide a natural response. You might also receive some follow up questions based on the result or some general query out of the shopping context which may require internet search results for which you have another function called \'internet\'.So, you don't need to use the function for every query. Based on your judgment use the functions whenever needed.")
+# Template text IGNORE: "ASIN which is the unique product ID (don't show ASIN to the user), Title, Stars, Reviews, Current_Price, MRP, Deal, Image, Link." " or some general query out of the shopping context which may require internet search results for which you have another function called \'internet\'.So, you don't need to use the function for every query."
+model = genai.GenerativeModel("gemini-1.5-flash",tools=tool,system_instruction="You are a helpful shopping assistant named Streaks. You would receive user queries related to product search, issues, or general for which you need to use the provided functions which give a list of dictionaries containing relevant details. You need to use this info to give a natural response. You might also receive some follow-up questions based on the result. Based on your judgment use the functions whenever needed.")
 
 # Function to translate roles between Gemini-Pro and Streamlit terminology
 def translate_role_for_streamlit(user_role):
