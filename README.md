@@ -3,7 +3,7 @@
 Welcome to the Streaks AI repository! Streaks AI is a conversational AI chatbot designed to serve as a shopping assistant, providing users with a seamless and intelligent shopping experience. Here you will find information on the features, technologies, and tools used in the development of this chatbot.
 
 ## Glimpse of Streaks Ai!
-![Streaks Ai in action]()
+![Streaks Ai in action](https://github.com/sridharstreaks/streaks-ai/blob/main/streaks_ai_sample.png)
 
 ## Features
 
