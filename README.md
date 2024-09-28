@@ -1,4 +1,4 @@
-# Streaks AI - Conversational Shopping Assistant V2
+# Streaks AI - Conversational Shopping Assistant V5
 
 Welcome to the Streaks AI repository! Streaks AI is a conversational AI chatbot designed to serve as a shopping assistant, providing users with a seamless and intelligent shopping experience. Here you will find information on the features, technologies, and tools used in the development of this chatbot.
 
@@ -7,7 +7,19 @@ Welcome to the Streaks AI repository! Streaks AI is a conversational AI chatbot 
 
 ## Features
 
-### Version 2 (Current)
+### Version 5 (Current)
+- **Related Questions**: Integrated feature to help steer ur chatting journey with related questions to the current topic.
+- **Usage**: Each time you ask something in the chat Five RQs pop up as suggestions. 
+
+### Version 4
+- **Get more info from Product page**: Integrated set of features to help with getting full info of a product along with reviews summary, pros and cons.
+- **Usage**: Just ask like "get more info 2nd product" or "compare first and third product"
+
+### Version 3
+- **Amazon Help Functionality**: Integrated feature to help with issues/queries or guidelines regarding anything from Amazon.
+- **Usage**: Just ask your doubts like "i have issues with order" or "broken packages received"
+
+### Version 2 
 - **Internet Functionality**: Integrated DuckDuckGo for real-time information retrieval from the web.
 - **Enhanced Features**: Future versions will include additional eCommerce sites and more advanced functionalities.
 
@@ -26,6 +38,7 @@ Welcome to the Streaks AI repository! Streaks AI is a conversational AI chatbot 
 - **Web Scraping**: For extracting data from web pages.
 - **Regex and XPath**: For parsing and extracting information.
 - **Prompt Engineering and LLM Function Calling**: Customizing interactions and responses.
+- **Structured outputs using Pydantic**: Customizing Api response using custom classes with pydantic.
 - **Python**: Core programming language used for development.
 - **Streamlit**: Framework for building the user interface.
 - **Gemini Flash API**: Interface with Google's Gemini for natural language processing.

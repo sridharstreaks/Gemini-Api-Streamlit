@@ -4,6 +4,33 @@ import requests
 from bs4 import BeautifulSoup
 import re
 from duckduckgo_search import DDGS
+from google.generativeai.types import HarmCategory, HarmBlockThreshold
+import json
+from streamlit_pills import pills
+
+def stitch(query:str,last_chat_response:str):
+    query="user query: " + query
+    last_chat_response="response: " + last_chat_response
+    return query+", "+last_chat_response
+    
+def json_to_list(string:str):
+    # Strip the newline character at the end, if present
+    string = string.strip()
+    
+    # Use json.loads to convert the string to a list
+    return json.loads(string)
+    
+def related_questions(query:str,last_chat_response:str):
+    model_rq = genai.GenerativeModel("gemini-1.5-flash",system_instruction="suggest 5 related questions that a user might be interested in. The related questions must be strictly relevant to the current query and the response received.")
+    response_rq = model_rq.generate_content(
+    stitch(query,last_chat_response),
+    generation_config=genai.GenerationConfig(
+        response_mime_type="application/json", response_schema=list[str]
+    ),safety_settings={
+        HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_ONLY_HIGH
+    }
+    )
+    return json_to_list(response_rq.parts[-1].text)
 
 def internet(query:str):
     """ Fetches search results for any real-time or present information from the internet based on keywords as input
@@ -236,7 +263,7 @@ genai.configure(api_key=api_key)  # Loading the API key into the generativeai mo
 
 # Initialize the model
 # Template text IGNORE: "ASIN which is the unique product ID (don't show ASIN to the user), Title, Stars, Reviews, Current_Price, MRP, Deal, Image, Link." " or some general query out of the shopping context which may require internet search results for which you have another function called \'internet\'.So, you don't need to use the function for every query."
-model = genai.GenerativeModel("gemini-1.5-flash",tools=tool,system_instruction="You are a helpful shopping assistant named Streaks. You would receive user queries related to Amazon product search, help or issues associated with Amazon customer service, and general queries (internet search) for which you need to use the provided functions which give a list of dictionaries containing relevant details. You need to use this info to give a natural response. You might also receive some follow-up questions based on the result. Based on your judgment use the functions whenever needed.")
+model = genai.GenerativeModel("gemini-1.5-flash",tools=tool,system_instruction="You are a helpful shopping assistant named Streaks. You would receive user queries related to Amazon product search, help or issues associated with Amazon customer service, and general queries (internet search) for which you need to use the provided functions which give a list of dictionaries containing relevant details. You need to use this info to give a natural response. You might also receive some follow-up questions based on the result. Based on your judgment use the functions whenever needed. Follow a consistent output format and do not change that everytime. Try to include all the information outputed by function calling including any links if applicable in your response in a nicely formatted way. Omit/Fix badly formatted function response.")
 
 # Function to translate roles between Gemini-Pro and Streamlit terminology
 def translate_role_for_streamlit(user_role):
@@ -245,14 +272,20 @@ def translate_role_for_streamlit(user_role):
     else:
         return user_role
 
-
 # Initialize chat session in Streamlit if not already present
 if "chat_session" not in st.session_state:
-    st.session_state.chat_session = model.start_chat(history=[],enable_automatic_function_calling=True)
+    st.session_state.chat_session = model.start_chat(history=[], enable_automatic_function_calling=True)
 
+# Initialize session state for selected related question if it doesn't exist
+if "selected_related_question" not in st.session_state:
+    st.session_state.selected_related_question = None
+
+# Initialize session state to store related questions
+if "related_questions_gemini" not in st.session_state:
+    st.session_state.related_questions_gemini = []
 
 # Display the chatbot's title on the page
-st.title("✨ Streaks Ai - Your New Shopping Assistant", help = "This Shopping assistant is designed by Sridhar Streaks powered by Google Gemini")
+st.title("✨ Streaks Ai - Your New Shopping Assistant", help="This Shopping assistant is designed by Sridhar Streaks powered by Google Gemini")
 
 # Display the chat history
 for message in st.session_state.chat_session.history:
@@ -262,12 +295,47 @@ for message in st.session_state.chat_session.history:
 # Input field for user's message
 user_prompt = st.chat_input("Ask Anything...")
 if user_prompt:
+    st.session_state.selected_related_question = None  # Reset the related question if new prompt is provided
+
     # Add user's message to chat and display it
     st.chat_message("user").markdown(user_prompt)
 
     # Send user's message to Gemini-Pro and get the response
-    gemini_response = st.session_state.chat_session.send_message(user_prompt)
+    gemini_response = st.session_state.chat_session.send_message(user_prompt, safety_settings={
+        HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_ONLY_HIGH
+    })
+    
+    # Get related questions and store them in session state
+    st.session_state.related_questions_gemini = related_questions(user_prompt, gemini_response.text)
+    
+    # Display Gemini-Pro's response
+    with st.chat_message("assistant"):
+        st.markdown(gemini_response.text)
 
+# Only show related questions if there are any
+if st.session_state.related_questions_gemini:
+    selected = pills("Related Questions", st.session_state.related_questions_gemini, index=None)
+    
+    # If a related question is selected, save it in session state
+    if selected and selected != st.session_state.selected_related_question:
+        st.session_state.selected_related_question = selected
+        st.rerun()  # Force app rerun to handle selected question
+
+# If a related question is selected, use it as the next query
+if st.session_state.selected_related_question:
+    #st.write(f"You selected: {st.session_state.selected_related_question}")
+    
+    # Add user's message to chat and display it
+    st.chat_message("user").markdown(st.session_state.selected_related_question)
+    
+    # Send user's message to Gemini-Pro and get the response
+    gemini_response = st.session_state.chat_session.send_message(st.session_state.selected_related_question, safety_settings={
+        HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_ONLY_HIGH
+    })
+    
+    # Get related questions for the selected query
+    st.session_state.related_questions_gemini = related_questions(st.session_state.selected_related_question, gemini_response.text)
+    
     # Display Gemini-Pro's response
     with st.chat_message("assistant"):
         st.markdown(gemini_response.text)
